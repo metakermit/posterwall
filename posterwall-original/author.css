@@ -1,0 +1,6 @@
+h1 { font-size: 32px; color: black; }
+body { background: white; }
+
+#container {width: 60%; margin: auto; }
+
+img.item { margin-bottom: 20px; }
