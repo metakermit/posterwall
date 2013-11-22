@@ -10,8 +10,9 @@ import feedparser
 
 def read_news(feed_url):
     feed = feedparser.parse(feed_url)
-    #news = [item['summary'] for item in feed['items'][:3]]
-    return feed['items'][:10]
+    news = [item['title'] for item in feed['items'][:3]]
+    #return feed['items'][:10]
+    return news
 
 
 def main():
