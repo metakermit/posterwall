@@ -63,7 +63,7 @@ DATABASES = {
     }
 }
 
-if os.environ.has_key('DATABASE_URL'): # production environment
+if 'DATABASE_URL' in os.environ: # production environment
     # DB config
     import dj_database_url
     DATABASES['default'] =  dj_database_url.config()
