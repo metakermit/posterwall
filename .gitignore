@@ -12,14 +12,18 @@ logs
 results
 
 npm-debug.log
-node_modules
 bower_components
 components
-.sass-cache
 build
-.tmp
 
 *~
 \#*\#
 *.pyc
 *.sqlite3
+
+node_modules
+dist
+.tmp
+.sass-cache
+app/bower_components
+test/bower_components
