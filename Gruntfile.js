@@ -22,7 +22,8 @@ module.exports = function (grunt) {
         yeoman: {
             // Configurable paths
             app: 'app',
-            dist: 'dist'
+            prod: 'prod',
+            dist: '<%= yeoman.prod %>/static'
         },
 
         // Watches files for changes and runs tasks based on the changed files
@@ -315,6 +316,12 @@ module.exports = function (grunt) {
                 cwd: '<%= yeoman.app %>/styles',
                 dest: '.tmp/styles/',
                 src: '{,*/}*.css'
+            },
+            prod:{
+                src: ['*', '**', '!app/**', '!prod/**', '!node_modules/**',
+                      '!test/**', '!Gruntfile.js', '!{bower,package}.json',
+                      '!{,*/}{.*,*~,\#*\#,*.pyc,*.sqlite3,__pycache__/**}'],
+                dest: '<%= yeoman.prod %>/'
             }
         },
 
@@ -347,6 +354,21 @@ module.exports = function (grunt) {
                 'imagemin',
                 'svgmin'
             ]
+        },
+
+        buildcontrol: {
+            options: {
+                dir: '<%= yeoman.prod %>',
+                commit: true,
+                //push: true,
+                message: 'Built %sourceName% from commit %sourceCommit% on branch %sourceBranch%'
+            },
+            prod: {
+                options: {
+                    //remote: '',
+                    branch: 'prod'
+                }
+            }
         }
     });
 
@@ -398,6 +420,11 @@ module.exports = function (grunt) {
         'rev',
         'usemin',
         'htmlmin'
+    ]);
+
+    grunt.registerTask('publish', [
+        'copy:prod',
+        'buildcontrol:prod'
     ]);
 
     grunt.registerTask('default', [
