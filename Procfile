@@ -1,0 +1,1 @@
+web: gunicorn posterwall.wsgi

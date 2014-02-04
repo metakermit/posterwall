@@ -1,0 +1,1 @@
+console.log("'Allo 'Allo!");var container=document.querySelector("#container"),msnry=new Masonry(container,{columnWidth:200,itemSelector:".item"});
