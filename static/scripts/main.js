@@ -1,1 +1,13 @@
-function main(){{var a=document.querySelector("#container");new Masonry(a,{columnWidth:200,itemSelector:".item"})}}console.log("'Allo 'Allo!"),$(main);
+console.log('\'Allo \'Allo!');
+
+function main() {
+    var container = document.querySelector('#container');
+    var msnry = new Masonry( container, {
+        // options
+        columnWidth: 200,
+        itemSelector: '.item'
+    });
+}
+
+$(document).ready(main);
+
