@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.shortcuts import render
 from get_feed import *
 
 def home(request):
@@ -10,4 +11,6 @@ def home(request):
             news = read_news(feed_url)
             all_news.extend(news)
     return HttpResponse('Posterwall: ' + ',\n'.join(all_news))
-    
+
+def grunt_test(request):
+    return render(request, 'dj-base.html')

@@ -317,6 +317,17 @@ module.exports = function (grunt) {
                 dest: '.tmp/styles/',
                 src: '{,*/}*.css'
             },
+            // this task is a hack until grunt-django enables
+            // rewriting templates so that app/bower_components
+            // can be used directly
+            devscripts: {
+                expand: true,
+                dot: true,
+                cwd: '<%= yeoman.dist %>/scripts',
+                dest: '.tmp/scripts/',
+                src: 'plugins.js'
+            },
+            // copy all the non-frontend stuff into the production folder
             prod:{
                 src: ['*', '**', '!app/**', '!prod/**', '!node_modules/**',
                       '!test/**', '!Gruntfile.js', '!{bower,package}.json',
@@ -417,7 +428,7 @@ module.exports = function (grunt) {
         'uglify',
         'copy:dist',
         'modernizr',
-        'rev',
+        // 'rev', // needs grunt-django
         'usemin',
         'htmlmin'
     ]);
