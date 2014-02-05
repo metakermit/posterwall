@@ -23,4 +23,5 @@ def main():
             news = read_news(feed_url)
             print(news)
 
-main()
+if __name__=='__main__':
+    main()
