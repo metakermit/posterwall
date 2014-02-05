@@ -371,12 +371,12 @@ module.exports = function (grunt) {
             options: {
                 dir: '<%= yeoman.prod %>',
                 commit: true,
-                //push: true,
+                push: true,
                 message: 'Built %sourceName% from commit %sourceCommit% on branch %sourceBranch%'
             },
             prod: {
                 options: {
-                    //remote: '',
+                    remote: 'git@github.com:kermit666/posterwall.git',
                     branch: 'prod'
                 }
             }
