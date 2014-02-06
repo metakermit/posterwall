@@ -18,18 +18,10 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'h4@c1x9okapu5^#iurp21i(vn14s5c#1lqx!$k-#^v%rd#rn!b'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-TEMPLATE_DEBUG = True
-
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
 INSTALLED_APPS = (
-    'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -64,11 +56,21 @@ DATABASES = {
 }
 
 if 'DATABASE_URL' in os.environ: # production environment
+    # SECURITY WARNING: don't run with debug turned on in production!
+    DEBUG = True
+    TEMPLATE_DEBUG = True
+    ALLOWED_HOSTS = ['*']
     # DB config
     import dj_database_url
     DATABASES['default'] =  dj_database_url.config()
+    # Honor the 'X-Forwarded-Proto' header for request.is_secure()
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 else: # development environment
-    pass
+    DEBUG = True
+    TEMPLATE_DEBUG = True
+    # print e-mails to the console instead of sending them
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
 
 # Templates
 
