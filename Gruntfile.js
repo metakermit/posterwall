@@ -325,7 +325,7 @@ module.exports = function (grunt) {
                 dot: true,
                 cwd: '<%= yeoman.dist %>/scripts',
                 dest: '.tmp/scripts/',
-                src: 'plugins.js'
+                src: 'vendor.js'
             },
             // copy all the non-frontend stuff into the production folder
             prod:{
@@ -427,6 +427,7 @@ module.exports = function (grunt) {
         'cssmin',
         'uglify',
         'copy:dist',
+        'copy:devscripts',
         'modernizr',
         // 'rev', // needs grunt-django
         'usemin',
@@ -440,7 +441,7 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask('publish', [
-        'default',
+        'build',
         'copy:prod',
         'buildcontrol:prod'
     ]);

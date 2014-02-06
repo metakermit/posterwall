@@ -1,13 +1,24 @@
-console.log('\'Allo \'Allo!');
+// function main() {
+//     var container = document.querySelector('#container');
+//     var msnry = new Masonry( container, {
+//         // options
+//         columnWidth: 200,
+//         itemSelector: '.item'
+//     });
+// }
+
+// $(document).ready(main);
 
 function main() {
-    var container = document.querySelector('#container');
-    var msnry = new Masonry( container, {
-        // options
+    var $container = $('#container');
+    // initialize
+    $container.masonry({
         columnWidth: 200,
-        itemSelector: '.item'
+        itemSelector: '.item',
+        gutter: Math.random()*10+20
     });
+
+    var msnry = $container.data('masonry');
 }
 
-$(document).ready(main);
-
+$(window).load(main);
