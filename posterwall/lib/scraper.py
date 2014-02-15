@@ -1,7 +1,9 @@
+from urllib.parse import urljoin
+import urllib
+import webbrowser
+
 import requests
 from bs4 import BeautifulSoup
-import webbrowser
-import urllib
 from PIL import ImageFile
 
 #TODO: check size and choose based on that
@@ -53,7 +55,39 @@ def _fetch_image_size(url, referer):
         if response:
             response.close()
 
+#TODO: profile, something is too slow
+class Scraper(object):
+    def __init__(self, url):
+        self.url = url
 
+    def _extract_image_urls(self, soup):
+        for img in soup.findAll("img", src=True):
+            yield urljoin(self.url, img["src"])
+
+    def _find_thumbnail_image(self):
+        # _fetch_content
+        resp = requests.get(self.url)
+        html = resp.text
+        soup = BeautifulSoup(html)
+        image_urls = self._extract_image_urls(soup)
+        # find biggest
+        # TODO: use Reddit's procedure
+        max_size = (0, 0)
+        max_url = None
+        for image_url in image_urls:
+            size = _fetch_image_size(image_url, referer=self.url)
+            if not size:
+                continue
+            if size > max_size:
+                max_size = size
+                max_url = image_url
+        return max_url
+
+
+    def scrape(self):
+        thumbnail_url = self._find_thumbnail_image()
+        #thumbnail = _make_thumbnail_from_url(thumbnail_url, referer=self.url)
+        return thumbnail_url
 
 link = "https://www.kset.org/dogadaj/2014-02-14-plesnjak-kino-valentinovo/"
 
@@ -75,4 +109,11 @@ def test_get_image_size():
     size = _fetch_image_size(img_url, link)
     print(size)
 
-test_get_image_size()
+#test_get_image_size()
+
+def test_scraper():
+    scraper = Scraper(link)
+    thumbnail = scraper.scrape()
+    print(thumbnail)
+
+test_scraper()
