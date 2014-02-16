@@ -1,21 +1,15 @@
 from urllib.parse import urljoin
 import urllib
+import io
+import gzip
 import webbrowser
 
 import requests
 from bs4 import BeautifulSoup
 from PIL import ImageFile
 
-#TODO: check size and choose based on that
-
-def _clean_url(url):
-    """url quotes unicode data out of urls"""
-    #url = url.encode('utf8')
-    #url = ''.join(urllib.quote(c) if ord(c) >= 127 else c for c in url)
-    return url
-
+#TODO: replace with Requests (using keep-alive (and gzip))
 def _initialize_request(url, referer):
-    url = _clean_url(url)
 
     if not url.startswith(("http://", "https://")):
         return
@@ -28,7 +22,22 @@ def _initialize_request(url, referer):
         req.add_header('Referer', referer)
     return req
 
+def _fetch_url(url, referer=None):
+    request = _initialize_request(url, referer=referer)
+    if not request:
+        return None, None
+    response = urllib.request.urlopen(request)
+    response_data = response.read()
+    content_encoding = response.info().get("Content-Encoding")
+    if content_encoding and content_encoding.lower() in ["gzip", "x-gzip"]:
+        buf = io.BytesIO(response_data)
+        f = gzip.GzipFile(fileobj=buf)
+        response_data = f.read()
+    return response.headers.get("Content-Type"), response_data
+
+
 #TODO: cache (for multiple links to the same image)
+# http://requests-cache.readthedocs.org/en/latest/user_guide.html#usage
 def _fetch_image_size(url, referer):
     """Return the size of an image by URL downloading as little as possible."""
 
@@ -56,6 +65,7 @@ def _fetch_image_size(url, referer):
             response.close()
 
 #TODO: profile, something is too slow
+# -> ssl handshake on every request
 class Scraper(object):
     def __init__(self, url):
         self.url = url
@@ -66,9 +76,10 @@ class Scraper(object):
 
     def _find_thumbnail_image(self):
         # _fetch_content
-        resp = requests.get(self.url)
-        html = resp.text
-        soup = BeautifulSoup(html)
+        content_type, content = _fetch_url(self.url)
+        #resp = requests.get(self.url)
+        #html = resp.text
+        soup = BeautifulSoup(content)
         image_urls = self._extract_image_urls(soup)
         # find biggest
         # TODO: use Reddit's procedure
@@ -89,7 +100,8 @@ class Scraper(object):
         #thumbnail = _make_thumbnail_from_url(thumbnail_url, referer=self.url)
         return thumbnail_url
 
-link = "https://www.kset.org/dogadaj/2014-02-14-plesnjak-kino-valentinovo/"
+#link = "https://www.kset.org/dogadaj/2014-02-14-plesnjak-kino-valentinovo/"
+link = "https://www.kset.org/dogadaj/2014-03-07-hladno-pivo/"
 
 def get_image_urls_on_page(link):
     resp = requests.get(link)
@@ -116,4 +128,5 @@ def test_scraper():
     thumbnail = scraper.scrape()
     print(thumbnail)
 
-test_scraper()
+if __name__=="__main__":
+    test_scraper()
