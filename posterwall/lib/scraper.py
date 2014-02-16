@@ -8,8 +8,9 @@ import requests
 from bs4 import BeautifulSoup
 from PIL import ImageFile
 
-#TODO: replace with Requests (using keep-alive (and gzip))
-def _initialize_request(url, referer):
+#TODO: use Requests session (to get keep-alive)
+#TODO: check gzip
+def _initialize_request_old(url, referer):
 
     if not url.startswith(("http://", "https://")):
         return
@@ -22,7 +23,10 @@ def _initialize_request(url, referer):
         req.add_header('Referer', referer)
     return req
 
-def _fetch_url(url, referer=None):
+def _initialize_request(url, referer):
+    pass
+
+def _fetch_url_old(url, referer=None):
     request = _initialize_request(url, referer=referer)
     if not request:
         return None, None
@@ -35,13 +39,17 @@ def _fetch_url(url, referer=None):
         response_data = f.read()
     return response.headers.get("Content-Type"), response_data
 
+def _fetch_url(url, referer=None):
+    response = requests.get(url)
+    return response.headers['content-type'], response.text
+
 
 #TODO: cache (for multiple links to the same image)
 # http://requests-cache.readthedocs.org/en/latest/user_guide.html#usage
-def _fetch_image_size(url, referer):
+def _fetch_image_size_old(url, referer):
     """Return the size of an image by URL downloading as little as possible."""
 
-    request = _initialize_request(url, referer)
+    request = _initialize_request_old(url, referer)
     if not request:
         return None
 
@@ -63,6 +71,24 @@ def _fetch_image_size(url, referer):
     finally:
         if response:
             response.close()
+
+def _fetch_image_size(url, referer):
+    """Return the size of an image by URL downloading as little as possible."""
+
+    parser = ImageFile.Parser()
+    response = None
+    try:
+        response = requests.get(url, stream=True)
+        while True:
+            chunk = response.raw.read(1024)
+            if not chunk:
+                break
+
+            parser.feed(chunk)
+            if parser.image:
+                return parser.image.size
+    except:
+        return None
 
 #TODO: profile, something is too slow
 # -> ssl handshake on every request
