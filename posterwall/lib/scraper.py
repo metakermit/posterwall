@@ -8,6 +8,9 @@ import requests
 from bs4 import BeautifulSoup
 from PIL import ImageFile
 
+#TODO: make it a Scrapper property
+session = requests.Session()
+
 #TODO: use Requests session (to get keep-alive)
 #TODO: check gzip
 def _initialize_request_old(url, referer):
@@ -40,7 +43,7 @@ def _fetch_url_old(url, referer=None):
     return response.headers.get("Content-Type"), response_data
 
 def _fetch_url(url, referer=None):
-    response = requests.get(url)
+    response = session.get(url)
     return response.headers['content-type'], response.text
 
 
@@ -78,7 +81,7 @@ def _fetch_image_size(url, referer):
     parser = ImageFile.Parser()
     response = None
     try:
-        response = requests.get(url, stream=True)
+        response = session.get(url, stream=True)
         while True:
             chunk = response.raw.read(1024)
             if not chunk:
@@ -130,7 +133,7 @@ class Scraper(object):
 link = "https://www.kset.org/dogadaj/2014-03-07-hladno-pivo/"
 
 def get_image_urls_on_page(link):
-    resp = requests.get(link)
+    resp = session.get(link)
     html = resp.text
     soup = BeautifulSoup(html)
     images = soup.find_all('img')
