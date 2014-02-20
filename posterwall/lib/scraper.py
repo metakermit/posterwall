@@ -8,10 +8,6 @@ import requests
 from bs4 import BeautifulSoup
 from PIL import ImageFile
 
-#TODO: make it a Scrapper property
-session = requests.Session()
-
-#TODO: use Requests session (to get keep-alive)
 #TODO: check gzip
 def _initialize_request_old(url, referer):
 
@@ -42,12 +38,15 @@ def _fetch_url_old(url, referer=None):
         response_data = f.read()
     return response.headers.get("Content-Type"), response_data
 
-def _fetch_url(url, referer=None):
-    response = session.get(url)
+def _fetch_url(url, referer=None, session=None):
+    if session:
+        response = session.get(url)
+    else:
+        response = requests.get(url)
     return response.headers['content-type'], response.text
 
 
-#TODO: cache (for multiple links to the same image)
+#TODO: cache (for multiple links to the same image) !!!
 # http://requests-cache.readthedocs.org/en/latest/user_guide.html#usage
 def _fetch_image_size_old(url, referer):
     """Return the size of an image by URL downloading as little as possible."""
@@ -75,20 +74,24 @@ def _fetch_image_size_old(url, referer):
         if response:
             response.close()
 
-def _fetch_image_size(url, referer):
+def _fetch_image_size(url, referer, session=None):
     """Return the size of an image by URL downloading as little as possible."""
 
     parser = ImageFile.Parser()
     response = None
     try:
-        response = session.get(url, stream=True)
-        while True:
+        if session:
+            response = session.get(url, stream=True)
+        else:
+            response = requests.get(url, stream=True)
+        while True: # TODO: inspect this - new SSL handshakes every time
             chunk = response.raw.read(1024)
             if not chunk:
                 break
 
             parser.feed(chunk)
             if parser.image:
+                #response.raw._fp.close()
                 return parser.image.size
     except:
         return None
@@ -98,6 +101,7 @@ def _fetch_image_size(url, referer):
 class Scraper(object):
     def __init__(self, url):
         self.url = url
+        self.session = requests.Session()
 
     def _extract_image_urls(self, soup):
         for img in soup.findAll("img", src=True):
@@ -105,7 +109,7 @@ class Scraper(object):
 
     def _find_thumbnail_image(self):
         # _fetch_content
-        content_type, content = _fetch_url(self.url)
+        content_type, content = _fetch_url(self.url, session=self.session)
         #resp = requests.get(self.url)
         #html = resp.text
         soup = BeautifulSoup(content)
@@ -115,7 +119,8 @@ class Scraper(object):
         max_size = (0, 0)
         max_url = None
         for image_url in image_urls:
-            size = _fetch_image_size(image_url, referer=self.url)
+            size = _fetch_image_size(image_url, referer=self.url,
+                                     session=self.session)
             if not size:
                 continue
             if size > max_size:
@@ -133,6 +138,7 @@ class Scraper(object):
 link = "https://www.kset.org/dogadaj/2014-03-07-hladno-pivo/"
 
 def get_image_urls_on_page(link):
+    session = requests.Session()
     resp = session.get(link)
     html = resp.text
     soup = BeautifulSoup(html)
@@ -145,9 +151,10 @@ def get_image_urls_on_page(link):
     webbrowser.open(img_url)
 
 def test_get_image_size():
+    session = requests.Session()
     img_url = "https://www.kset.org/media/uploads/program/_2014/2014-02-14_valentinovo_fb_thumb.jpg"
     #import pdb; pdb.set_trace()
-    size = _fetch_image_size(img_url, link)
+    size = _fetch_image_size(img_url, link, session=session)
     print(size)
 
 #test_get_image_size()
