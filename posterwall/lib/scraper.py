@@ -3,10 +3,14 @@ import urllib
 import io
 import gzip
 import webbrowser
+import logging
+import sys
 
 import requests
 from bs4 import BeautifulSoup
 from PIL import ImageFile
+
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
 #TODO: check gzip
 def _initialize_request_old(url, referer):
@@ -115,6 +119,10 @@ class Scraper(object):
         #html = resp.text
         soup = BeautifulSoup(content)
         image_urls = self._extract_image_urls(soup)
+        image_urls = [u for u in image_urls] # turn to list
+        logging.debug('originally have {} images'.format(len(image_urls)))
+        image_urls = list(set(image_urls)) # lose duplicates
+        logging.debug('fetching {} images'.format(len(image_urls)))
         # find biggest
         # TODO: use Reddit's procedure
         max_size = (0, 0)
@@ -154,7 +162,6 @@ def get_image_urls_on_page(link):
 def test_get_image_size():
     session = requests.Session()
     img_url = "https://www.kset.org/media/uploads/program/_2014/2014-02-14_valentinovo_fb_thumb.jpg"
-    #import pdb; pdb.set_trace()
     size = _fetch_image_size(img_url, link, session=session)
     print(size)
 
