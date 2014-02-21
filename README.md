@@ -6,6 +6,7 @@ Development
 Get ready:
 
     mkvirtualenv -p `python3` posterwall
+    sudo apt-get install libjpeg-dev
     pip install -r requirements/dev.txt
     npm install
     bower install

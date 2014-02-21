@@ -88,13 +88,14 @@ def _fetch_image_size(url, referer, session=None):
             chunk = response.raw.read(1024)
             if not chunk:
                 break
-
             parser.feed(chunk)
             if parser.image:
-                #response.raw._fp.close()
                 return parser.image.size
-    except:
+    except requests.RequestException:
         return None
+    finally:
+        if response:
+            response.close()
 
 #TODO: profile, something is too slow
 # -> ssl handshake on every request
