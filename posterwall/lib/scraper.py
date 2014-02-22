@@ -83,13 +83,14 @@ def _fetch_image_size(url, referer, session=None):
 
     parser = ImageFile.Parser()
     response = None
+
+    # with closing(session.get(url, stream=True)) as response:
     try:
         if session:
             response = session.get(url, stream=True)
         else:
             response = requests.get(url, stream=True)
-        while True: # TODO: inspect this - new SSL handshakes every time
-            chunk = response.raw.read(1024)
+        for chunk in response.iter_content(chunk_size=32):
             if not chunk:
                 break
             parser.feed(chunk)
@@ -127,14 +128,17 @@ class Scraper(object):
         # TODO: use Reddit's procedure
         max_size = (0, 0)
         max_url = None
+        sizes = []
         for image_url in image_urls:
             size = _fetch_image_size(image_url, referer=self.url,
                                      session=self.session)
             if not size:
                 continue
+            sizes.append(size)
             if size > max_size:
                 max_size = size
                 max_url = image_url
+        logging.debug('got sizes for {} images'.format(len(sizes)))
         return max_url
 
 
@@ -145,6 +149,7 @@ class Scraper(object):
 
 #link = "https://www.kset.org/dogadaj/2014-02-14-plesnjak-kino-valentinovo/"
 link = "https://www.kset.org/dogadaj/2014-03-07-hladno-pivo/"
+#link = "http://www.mochvara.hr/program/info/lynx-lynx-music-predstavlja-140419"
 
 def get_image_urls_on_page(link):
     session = requests.Session()
