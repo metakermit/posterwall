@@ -7,6 +7,7 @@ import logging
 import sys
 
 import requests
+from requests_futures.sessions import FuturesSession
 from bs4 import BeautifulSoup
 from PIL import ImageFile
 
@@ -44,7 +45,7 @@ def _fetch_url_old(url, referer=None):
 
 def _fetch_url(url, referer=None, session=None):
     if session:
-        response = session.get(url)
+        response = session.get(url).result()
     else:
         response = requests.get(url)
     return response.headers['content-type'], response.text
@@ -86,8 +87,8 @@ def _fetch_image_size(url, referer, session=None):
 
     # with closing(session.get(url, stream=True)) as response:
     try:
-        if session:
-            response = session.get(url, stream=True)
+        if session: # TODO: yield execution until result arrives
+            response = session.get(url, stream=True).result()
         else:
             response = requests.get(url, stream=True)
         for chunk in response.iter_content(chunk_size=32):
@@ -107,7 +108,7 @@ def _fetch_image_size(url, referer, session=None):
 class Scraper(object):
     def __init__(self, url):
         self.url = url
-        self.session = requests.Session()
+        self.session = FuturesSession(max_workers=20)
 
     def _extract_image_urls(self, soup):
         for img in soup.findAll("img", src=True):
