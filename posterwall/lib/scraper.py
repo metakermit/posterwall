@@ -67,14 +67,31 @@ class Scraper(object):
         logging.debug('got sizes for {} images'.format(len(image_sizes)))
         # find biggest
         # TODO: use Reddit's procedure !!!
-        max_size = (0, 0)
+        max_area = 0
         max_url = None
         for image_url in image_urls:
             size = image_sizes[image_url]
             if not size:
                 continue
-            if size > max_size:
-                max_size = size
+
+            # ignore little images
+            area = size[0] * size[1]
+            if area < 5000:
+                logging.debug('ignore little {}'.format(image_url))
+                continue
+
+            # ignore excessively long/wide images
+            if max(size) / min(size) > 1.5:
+                logging.debug('ignore dimensions {}'.format(image_url))
+                continue
+
+            # penalize images with "sprite" in their name
+            if 'sprite' in image_url.lower():
+                logging.debug('penalizing sprite {}'.format(image_url))
+                area /= 10
+
+            if area > max_area:
+                max_area = area
                 max_url = image_url
         return max_url
 
@@ -91,6 +108,7 @@ link = "https://www.kset.org/dogadaj/2014-03-07-hladno-pivo/"
 def test_scraper():
     scraper = Scraper(link)
     thumbnail = scraper.scrape()
+    print('SCRAPER RESULT:')
     print(thumbnail)
 
 if __name__=="__main__":
