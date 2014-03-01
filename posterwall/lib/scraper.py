@@ -14,7 +14,6 @@ from PIL import ImageFile
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
-#TODO: check gzip
 def _fetch_url(url, referer=None, session=None):
     response = session.get(url).result()
     return response.headers['content-type'], response.text
@@ -38,7 +37,7 @@ def _parallel_get_sizes(img_urls, session):
                 if parser.image:
                     sizes[img_url] = parser.image.size
                     break
-        except requests.RequestsException:
+        except requests.exceptions.RequestException:
             sizes[img_url] = None
         finally:
             if response:
@@ -66,7 +65,6 @@ class Scraper(object):
         image_sizes = _parallel_get_sizes(image_urls, self.session)
         logging.debug('got sizes for {} images'.format(len(image_sizes)))
         # find biggest
-        # TODO: use Reddit's procedure !!!
         max_area = 0
         max_url = None
         for image_url in image_urls:
