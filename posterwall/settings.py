@@ -22,6 +22,8 @@ SECRET_KEY = 'h4@c1x9okapu5^#iurp21i(vn14s5c#1lqx!$k-#^v%rd#rn!b'
 # Application definition
 
 INSTALLED_APPS = (
+    'south',
+    'posterwall.apps.events',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
