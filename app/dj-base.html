@@ -23,6 +23,8 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
+        {% block content %}
+
         <div class="hero-unit">
 
           <h1>Posterwall</h1>
@@ -40,6 +42,8 @@
             <img class="item" src="{% static './images/11.jpg' %}">
           </div>
           <div style="clear:both"></div>
+
+          {% endblock %}
 
 
         <footer>
