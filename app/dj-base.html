@@ -23,11 +23,11 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        {% block content %}
 
         <div class="hero-unit">
 
           <h1>Posterwall</h1>
+          {% block content %}
           <div id="container">
             <img class="item" src="{% static './images/1.jpg' %}">
             <img class="item" src="{% static './images/2.jpg' %}">
@@ -41,10 +41,9 @@
             <img class="item" src="{% static './images/10.jpg' %}">
             <img class="item" src="{% static './images/11.jpg' %}">
           </div>
-          <div style="clear:both"></div>
-
           {% endblock %}
-
+          
+          <div style="clear:both"></div>
 
         <footer>
           <a href="https://www.github.com/kermit666/posterwall">source</a>
