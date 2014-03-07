@@ -22,6 +22,7 @@ SECRET_KEY = 'h4@c1x9okapu5^#iurp21i(vn14s5c#1lqx!$k-#^v%rd#rn!b'
 # Application definition
 
 INSTALLED_APPS = (
+    'djcelery',
     'south',
     'posterwall.apps.events',
     'django.contrib.admin',
@@ -73,6 +74,9 @@ else: # development environment
     # print e-mails to the console instead of sending them
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
+
+#CELERY_RESULT_BACKEND='djcelery.backends.cache:CacheBackend'
+CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
 
 # Templates
 
