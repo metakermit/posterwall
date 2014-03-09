@@ -12,6 +12,14 @@ Get ready:
     bower install
     grunt build
 
+Get RabbitMQ running:
+
+    brew install rabbitmq
+
+or
+
+    sudo apt-get install rabbitmq-server
+
 Link up your front+backend:
 
     util/bootstrap.sh
