@@ -12,13 +12,19 @@ Get ready:
     bower install
     grunt build
 
-Get RabbitMQ running:
+Get RabbitMQ and Postgres running:
 
-    brew install rabbitmq
+    brew install rabbitmq postgresql
+    brew services start postgresql
 
 or
 
-    sudo apt-get install rabbitmq-server
+    sudo apt-get install rabbitmq-server libpq-dev python-dev \
+    postgresql postgresql-contrib
+
+and
+
+    ./util/create-devdb.sh
 
 Link up your front+backend:
 
