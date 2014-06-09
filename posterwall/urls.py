@@ -7,5 +7,6 @@ urlpatterns = patterns(
     '',
     #url(r'^$', 'posterwall.views.home', name='home'),
     url(r'^$', 'posterwall.views.grunt_test', name='grunt_test'),
+    url(r'^events/', include('posterwall.apps.events.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )

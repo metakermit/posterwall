@@ -1,0 +1,11 @@
+{% extends "dj-base.html" %}
+
+{% block content %}
+
+<div id="container" style="position: relative; height: 5365px;">
+{% for event in events %}
+  <a href="{{ event.url }}"><img class="item" src="{{ event.img_url }}"></a>
+{% endfor %}
+</div>
+
+{% endblock %}

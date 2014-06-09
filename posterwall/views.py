@@ -1,8 +1,8 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-from get_feed import *
 
 def home(request):
+    # from posterwall.lib.get_feed import *
     all_news = []
     with open('places.txt') as places:
         urls = [line.rstrip() for line in places if line!='']

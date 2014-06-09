@@ -6,10 +6,25 @@ Development
 Get ready:
 
     mkvirtualenv -p `python3` posterwall
+    sudo apt-get install libjpeg-dev
     pip install -r requirements/dev.txt
     npm install
     bower install
     grunt build
+
+Get RabbitMQ and Postgres running:
+
+    brew install rabbitmq postgresql
+    brew services start postgresql
+
+or
+
+    sudo apt-get install rabbitmq-server libpq-dev python-dev \
+    postgresql postgresql-contrib
+
+and
+
+    ./util/create-devdb.sh
 
 Link up your front+backend:
 
